@@ -24,19 +24,57 @@
 #    include <pylon/PylonGUI.h>
 #endif
 
+#include <iostream>
+#include <ctime>
+#include <ratio>
+#include <chrono>
+
+#include <sys/stat.h>
+
 // Namespace for using pylon objects.
 using namespace Pylon;
 
 // Namespace for using cout.
 using namespace std;
 
+// Namespace for highres clock
+using namespace std::chrono;
+
 // Number of images to be grabbed.
-static const uint32_t c_countOfImagesToGrab = 100;
+static const uint32_t c_countOfImagesToGrab = 1000;
+
+const int hz_approx=2000;
+const float num_secs=0.5;
+const float num_frames=num_secs*hz_approx;
+
+// For my case, don't think there is a such a huge difference:
+//#define CLOCK_TYPE CLOCK_REALTIME
+#define CLOCK_TYPE CLOCK_MONOTONIC
+
+#define TEMP_PREFIX "/var/run/user/1001"
 
 int main(int argc, char* argv[])
 {
+    FILE *pFile_times, *pFile_times_temp, *pFile_ims;
+    clock_t start, end;
+    struct timespec t_start, t_end, t_diff, t_temp;
+    double cpu_time_used;
+    int frames=0, done=0;
+
     // The exit code of the sample application.
     int exitCode = 0;
+
+    pFile_times_temp=fopen(TEMP_PREFIX "/times_temp.txt","wt");
+    if (pFile_times_temp)
+        printf("Temp_times file ok\n");
+
+	// This will be overwritten when they hit a key:
+      	high_resolution_clock::time_point t_start2 = high_resolution_clock::now();
+
+    pFile_ims=fopen("movies/movie.bin","wb");
+    if (pFile_ims)
+        printf("Movie file ok\n");
+
 
     // Before using any pylon methods, the pylon runtime must be initialized. 
     PylonInitialize();
@@ -63,24 +101,53 @@ int main(int argc, char* argv[])
 
         // Camera.StopGrabbing() is called automatically by the RetrieveResult() method
         // when c_countOfImagesToGrab images have been retrieved.
-        while ( camera.IsGrabbing())
+        while ( camera.IsGrabbing() & !done)
         {
+	char s[1024]; // to hold timing msg
+
+            clock_gettime(CLOCK_TYPE,&t_temp);
+
             // Wait for an image and then retrieve it. A timeout of 5000 ms is used.
             camera.RetrieveResult( 5000, ptrGrabResult, TimeoutHandling_ThrowException);
+
+	    	// Time (in seconds) since started
+            high_resolution_clock::time_point t_now = high_resolution_clock::now();
+	    	duration<double> time_span = duration_cast<duration<double>>(t_now - t_start2);
+
+            clock_gettime(CLOCK_TYPE,&t_diff);
+       	    //fprintf(pFile_times,"%d,%ld,",frames,t_temp.tv_nsec);
+            //fprintf(pFile_times,"%ld,%ld,",t_diff.tv_nsec,t_diff.tv_nsec-t_temp.tv_nsec);
+            //fprintf(pFile_times,"%g\n",(double)time_span.count());
+
+	    sprintf(s, "%d,%ld,%ld,%ld,%g",
+       	    	frames,t_temp.tv_nsec,
+            	t_diff.tv_nsec,t_diff.tv_nsec-t_temp.tv_nsec,
+            	(double)time_span.count() );
+            fprintf(pFile_times_temp,"%s\n",s); // Write a copy to a temp file
 
             // Image grabbed successfully?
             if (ptrGrabResult->GrabSucceeded())
             {
-                // Access the image data.
-                cout << "SizeX: " << ptrGrabResult->GetWidth() << endl;
-                cout << "SizeY: " << ptrGrabResult->GetHeight() << endl;
-                const uint8_t *pImageBuffer = (uint8_t *) ptrGrabResult->GetBuffer();
-                cout << "Gray value of first pixel: " << (uint32_t) pImageBuffer[0] << endl << endl;
+		const int width=ptrGrabResult->GetWidth();
+		const int height=ptrGrabResult->GetHeight();
+                const uint16_t *pImageBuffer = (uint16_t *) ptrGrabResult->GetBuffer();
+
+		//fwrite(pImageBuffer, 1, width*height,pFile_im1_temp);
+		//rewind(pFile_im1_temp);
+
+				//if (recording)
+		fwrite(pImageBuffer, 1, width*height,pFile_ims);
 
 #ifdef PYLON_WIN_BUILD
                 // Display the grabbed image.
                 Pylon::DisplayImage(1, ptrGrabResult);
 #endif
+
+		frames += 1;
+
+		if (frames>num_frames) {
+			done=1;
+		}
             }
             else
             {
@@ -96,9 +163,12 @@ int main(int argc, char* argv[])
         exitCode = 1;
     }
 
+    fclose(pFile_times_temp);
+    fclose(pFile_ims);
+
     // Comment the following two lines to disable waiting on exit.
-    cerr << endl << "Press Enter to exit." << endl;
-    while( cin.get() != '\n');
+    //cerr << endl << "Press Enter to exit." << endl;
+    //while( cin.get() != '\n');
 
     // Releases all pylon resources. 
     PylonTerminate();  

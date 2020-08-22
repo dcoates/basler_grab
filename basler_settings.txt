@@ -1,0 +1,14 @@
+width=2048
+height=32
+offsetx=8
+offsety=256
+mono 12 (16bit)
+20dB gain
+Black level 96
+Digital Shift 4
+
+300 us Exposure Time
+
+= 2320.18561 / Resulting Frame Rate
+
+

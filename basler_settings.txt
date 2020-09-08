@@ -3,9 +3,9 @@ height=32
 offsetx=8
 offsety=256
 mono 12 (16bit)
-20dB gain
+20dB gain //0 for white on black
 Black level 96
-Digital Shift 4
+Digital Shift 4 //3 for white on black
 
 300 us Exposure Time
 

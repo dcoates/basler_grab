@@ -25,3 +25,7 @@ $(NAME).o: $(NAME).cpp
 
 clean:
 	$(RM) $(NAME).o $(NAME)
+
+tcp:
+	cp /var/run/user/1001/times_temp.txt .
+

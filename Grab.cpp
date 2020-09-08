@@ -41,11 +41,11 @@ using namespace std;
 using namespace std::chrono;
 
 // Number of images to be grabbed.
-static const uint32_t c_countOfImagesToGrab = 1000;
+static const uint32_t c_countOfImagesToGrab = 4651*20;
 
-const int hz_approx=2000;
+const int hz_approx=4424;
 const float num_secs=0.5;
-const float num_frames=num_secs*hz_approx;
+const float num_frames=c_countOfImagesToGrab; //num_secs*hz_approx*20;
 
 // For my case, don't think there is a such a huge difference:
 //#define CLOCK_TYPE CLOCK_REALTIME

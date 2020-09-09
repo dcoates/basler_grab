@@ -44,8 +44,9 @@ using namespace std::chrono;
 
 //const int hz_approx=4424;
 //const float num_secs=0.5;
-const int hz_approx=2754;
-const float num_secs=5;
+//const int hz_approx=2754;
+const int hz_approx=4651; //1024x1 
+const float num_secs=20;
 
 static const uint32_t c_countOfImagesToGrab = hz_approx*num_secs;
 const float num_frames=c_countOfImagesToGrab; //num_secs*hz_approx*20;
@@ -67,7 +68,7 @@ int main(int argc, char* argv[])
     // The exit code of the sample application.
     int exitCode = 0;
 
-    pFile_times_temp=fopen(TEMP_PREFIX "/times_temp.txt","wt");
+    pFile_times_temp=fopen("times_temp.txt","wt");
     if (pFile_times_temp)
         printf("Temp_times file ok\n");
 

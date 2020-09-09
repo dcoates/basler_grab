@@ -11,6 +11,7 @@ PYLON_ROOT ?= /opt/pylon5
 LD         := $(CXX)
 CPPFLAGS   := $(shell $(PYLON_ROOT)/bin/pylon-config --cflags)
 CXXFLAGS   := #e.g., CXXFLAGS=-g -O0 for debugging
+CXXFLAGS   := -g -O0 
 LDFLAGS    := $(shell $(PYLON_ROOT)/bin/pylon-config --libs-rpath)
 LDLIBS     := $(shell $(PYLON_ROOT)/bin/pylon-config --libs) #-Wl --copy-dt-needed-entries -lrt
 

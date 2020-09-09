@@ -41,10 +41,13 @@ using namespace std;
 using namespace std::chrono;
 
 // Number of images to be grabbed.
-static const uint32_t c_countOfImagesToGrab = 4651*20;
 
-const int hz_approx=4424;
-const float num_secs=0.5;
+//const int hz_approx=4424;
+//const float num_secs=0.5;
+const int hz_approx=2754;
+const float num_secs=5;
+
+static const uint32_t c_countOfImagesToGrab = hz_approx*num_secs;
 const float num_frames=c_countOfImagesToGrab; //num_secs*hz_approx*20;
 
 // For my case, don't think there is a such a huge difference:

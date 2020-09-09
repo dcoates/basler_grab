@@ -12,7 +12,7 @@ LD         := $(CXX)
 CPPFLAGS   := $(shell $(PYLON_ROOT)/bin/pylon-config --cflags)
 CXXFLAGS   := #e.g., CXXFLAGS=-g -O0 for debugging
 LDFLAGS    := $(shell $(PYLON_ROOT)/bin/pylon-config --libs-rpath)
-LDLIBS     := $(shell $(PYLON_ROOT)/bin/pylon-config --libs)
+LDLIBS     := $(shell $(PYLON_ROOT)/bin/pylon-config --libs) #-Wl --copy-dt-needed-entries -lrt
 
 # Rules for building
 all: $(NAME)

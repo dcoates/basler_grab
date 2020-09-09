@@ -1,0 +1,17 @@
+128x1
+
+1348x4
+
+Mono 8
+
+#6.4dB
+16dB
+
+Black Level 4DN
+
+Digital 4
+
+Exposure 300us
+
+Frame Rate 2754
+
